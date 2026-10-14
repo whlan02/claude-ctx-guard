@@ -2,7 +2,7 @@
 
 Let Claude Code see its own context size, and nudge you to `/compact` at the right moment, before long sessions get slow, expensive and fuzzy.
 
-A tiny hook injects the **exact token count** into every prompt (`[context] 117.7k / 1.00M tokens (12%), warn at 150.0k`). A short rule set tells the agent what to do at natural breakpoints: commit, summarize state, and hand you a ready-to-paste `/compact` command.
+A tiny hook injects the **exact token count** into every prompt (`[context] 117.7k / 1.00M tokens (12%), warn at 150.0k`). A short rule set tells the agent what to do at natural breakpoints: commit, then suggest `/compact` (with a one-line note only when a non-obvious decision must survive).
 
 ## Install (let Claude do it)
 
@@ -19,7 +19,7 @@ Then open a **new session** and ask: *"What does the [context] line say?"* If Cl
 
 - **Exact tokens, every turn.** Not just a percentage, and visible to the agent, not only to you.
 - **Your threshold.** Edit `warn_tokens` in `~/.claude/ctx/config.json`; it takes effect on the next message.
-- **Sensible nudges.** At task boundaries or above the threshold, the agent commits, writes a 3-5 line state summary, and suggests `/compact <what to keep>` or `/clear`. It never interrupts half-done work.
+- **Sensible nudges.** At task boundaries or above the threshold, the agent commits and suggests `/compact` (or `/clear` for unrelated work). It never interrupts half-done work.
 
 ## Config
 
