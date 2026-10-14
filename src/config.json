@@ -1,0 +1,4 @@
+{
+  "warn_tokens": 150000,
+  "context_window": 1000000
+}
