@@ -1,27 +1,27 @@
-# 上下文管理（全局规则）
+# Context management (global rules)
 
-每轮用户消息前，hook 会注入一行 `[context] X / Y tokens (P%), warn at W`，那是当前上下文的真实大小。
-长会话里每一轮都要重读全部历史，既贵又会降低质量，所以要在合适的节点收口。
+Before each user message, a hook injects a line like `[context] X / Y tokens (P%), warn at W`. That is the real current size of the context.
+In long sessions every turn re-reads the whole history, which is expensive and degrades quality, so wrap up at sensible breakpoints.
 
-## 到节点的判断
-满足任一条就算"到节点"：
-- 一个独立子任务完成（功能做完、bug 修完、一轮重构结束）
-- 测试/构建通过，工作区状态稳定
-- `[context]` 行出现 `THRESHOLD EXCEEDED`（已超过 warn 阈值）
-- 用户要切换到与当前无关的主题
+## What counts as a breakpoint
+Any one of these:
+- An independent subtask is finished (feature done, bug fixed, one refactor pass complete)
+- Tests/build pass and the working tree is in a stable state
+- The `[context]` line says `THRESHOLD EXCEEDED` (the warn threshold has been passed)
+- The user is about to switch to an unrelated topic
 
-## 到节点时按顺序做
-1. 工作区状态稳定后：如果用户没反对，commit；push 按项目惯例，拿不准就先问。
-2. 建议用户 `/compact`。默认摘要已能保留目标、改过的文件、未完成项，不要写长模板。只有存在"代码里看不出来的关键决定"或"要紧的待办"时，才附一句话，例如：
-   `/compact 记住：useSubtitleTranslation 评估后决定不拆`
-   没有就只说"可以 /compact 了"。
-3. 如果下一个任务与当前无关，建议 `/clear` 或开新会话，而不是 compact。
+## At a breakpoint, in order
+1. Once the working tree is stable: commit unless the user objects. Push per the project's convention; if unsure, ask first.
+2. Suggest the user run `/compact`. The default summary already keeps the goal, changed files and open items, so do not write a long template. Only when there is a "decision that is not visible in the code" or an "important pending item", add one line, for example:
+   `/compact Remember: decided not to split the useFoo hook`
+   Otherwise just say "good time to /compact".
+3. If the next task is unrelated to the current one, suggest `/clear` or a new session instead of compacting.
 
-## 不要做
-- 代码处于坏状态、任务做到一半时，不要打断去建议压缩；先把手头的事做到稳定点。
-- 不要假装执行了 `/compact` 或 `/clear`，只有用户能执行。
-- 同一个节点只提醒一次，不要每轮重复；没到节点也没超阈值时，不要主动提 compact。
-- 不要在回复里复述 `[context]` 数字，除非用户问，或者正在给出 compact 建议。
+## Do not
+- Do not interrupt to suggest compacting while the code is broken or a task is half-done; reach a stable point first.
+- Do not pretend you ran `/compact` or `/clear`; only the user can.
+- Remind once per breakpoint, not every turn. If there is no breakpoint and no threshold breach, do not bring up compacting.
+- Do not repeat the `[context]` numbers in replies unless the user asks or you are giving a compact suggestion.
 
-## 阈值
-阈值在 `~/.claude/ctx/config.json` 的 `warn_tokens`，用户会自己调整；以 hook 注入的数字为准，不要自己估算。
+## Threshold
+The threshold is `warn_tokens` in `~/.claude/ctx/config.json`, which the user adjusts. Trust the number the hook injects; do not estimate it yourself.
